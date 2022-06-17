@@ -136,7 +136,7 @@ class Users extends Controller
           $data['confirm_password_err'] = 'Passwords do not match';
         }
 
-        if ($this->userModel->userExists($data['email'])) {
+        if ($this->userModel->userExistsByEmail($data['email'])) {
           $data['email_err'] = 'Email is already taken';
         }
 
@@ -147,7 +147,7 @@ class Users extends Controller
         $data = checkEmpty($data, 'email');
         $data = checkEmpty($data, 'password');
 
-        if ($this->userModel->userExists($data['email'])) {
+        if ($this->userModel->userExistsByEmail($data['email'])) {
           // User Found
         } else {
           $data['email_err'] = 'No user found';

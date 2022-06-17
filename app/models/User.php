@@ -38,7 +38,7 @@ class User
   }
 
   // Find user by email
-  public function userExists($email)
+  public function userExistsByEmail($email)
   {
     $this->db->query('SELECT * FROM users WHERE email = :email');
     $this->db->bind(':email', $email);
@@ -47,5 +47,13 @@ class User
 
     // Check row
     return $this->db->rowCount() > 0;
+  }
+
+  public function getUserById($id)
+  {
+    $this->db->query('SELECT * FROM users WHERE id = :id');
+    $this->db->bind(':id', $id);
+
+    return $this->db->single();
   }
 }
