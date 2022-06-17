@@ -121,15 +121,6 @@ class Users extends Controller
 
   private function validateData($data, $dataType)
   {
-    function checkEmpty($data, $key, $err = '')
-    {
-      if (empty($data[$key])) {
-        $err = empty($err) ? 'Please enter ' . $key : $err;
-        $data[$key . '_err'] = $err;
-      }
-      return $data;
-    }
-
     // Individual Validation
 
     switch ($dataType) {
