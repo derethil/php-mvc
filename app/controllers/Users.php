@@ -91,11 +91,11 @@ class Users extends Controller
       if (empty($data['email_err']) && empty($data['password_err'])) {
         // Validated
         // Check password and set logged in user
-        $loggedInUser = $this->userModel->login($data['email'], $data['password']);
+        $userToLogin = $this->userModel->login($data['email'], $data['password']);
 
-        if ($loggedInUser) {
+        if ($userToLogin) {
           // Create session
-          die('SUCCESS');
+          $this->createUserSession($userToLogin);
         } else {
           $data['password_err'] = 'Incorrect password';
 
@@ -173,5 +173,27 @@ class Users extends Controller
     }
 
     return $data;
+  }
+
+  public function createUserSession($user)
+  {
+    $_SESSION['user_id'] = $user->id;
+    $_SESSION['user_email'] = $user->email;
+    $_SESSION['user_name'] = $user->name;
+    redirect('pages/index');
+  }
+
+  public function logout()
+  {
+    unset($_SESSION['user_id']);
+    unset($_SESSION['user_email']);
+    unset($_SESSION['user_name']);
+    session_destroy();
+    redirect('users/login');
+  }
+
+  public function isLoggedIn()
+  {
+    return isset($_SESSION['user_id']);
   }
 }

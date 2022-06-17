@@ -18,11 +18,7 @@ class User
     $this->db->bind(':password', $data['password']);
 
     // Execute
-    if ($this->db->execute()) {
-      return true;
-    } else {
-      return false;
-    }
+    return $this->db->execute();
   }
 
   // Login user
@@ -50,10 +46,6 @@ class User
     $row = $this->db->single();
 
     // Check row
-    if ($this->db->rowCount() > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return $this->db->rowCount() > 0;
   }
 }
