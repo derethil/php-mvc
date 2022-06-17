@@ -58,7 +58,7 @@ class Database
           $type = PDO::PARAM_NULL;
           break;
         default:
-          $type = PDO::PARAM_INT;
+          $type = PDO::PARAM_STR;
       }
     }
 
