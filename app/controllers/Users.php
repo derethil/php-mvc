@@ -90,7 +90,17 @@ class Users extends Controller
       // Make sure errors are empty
       if (empty($data['email_err']) && empty($data['password_err'])) {
         // Validated
-        die('SUCCESS');
+        // Check password and set logged in user
+        $loggedInUser = $this->userModel->login($data['email'], $data['password']);
+
+        if ($loggedInUser) {
+          // Create session
+          die('SUCCESS');
+        } else {
+          $data['password_err'] = 'Incorrect password';
+
+          $this->view('users/login', $data);
+        }
       } else {
         // Load view with errors
         $this->view('users/login', $data);
@@ -111,43 +121,55 @@ class Users extends Controller
 
   private function validateData($data, $dataType)
   {
+    function checkEmpty($data, $key, $err = '')
+    {
+      if (empty($data[$key])) {
+        $err = empty($err) ? 'Please enter ' . $key : $err;
+        $data[$key . '_err'] = $err;
+      }
+      return $data;
+    }
+
+    // Individual Validation
+
     switch ($dataType) {
       case DataType::Register:
-        // Validate Name
-        if (empty($data['name'])) {
-          $data['name_err'] = 'Please enter name';
-        }
+        // Ensure data exists
+        $data = checkEmpty($data, 'name');
+        $data = checkEmpty($data, 'email');
+        $data = checkEmpty($data, 'password');
+        $data = checkEmpty($data, 'confirm_password', "Please confirm password");
 
         // Validate Confirm Password
-        if (empty($data['confirm_password'])) {
-          $data['confirm_password_err'] = 'Please confirm password';
-        } else if ($data['password'] != $data['confirm_password']) {
+        if ($data['password'] != $data['confirm_password']) {
           $data['confirm_password_err'] = 'Passwords do not match';
         }
 
-      case DataType::Login:
-        // Validate Email Is Not Empty
-        if (empty($data['email'])) {
-          $data['email_err'] = 'Please enter email';
+        if ($this->userModel->userExists($data['email'])) {
+          $data['email_err'] = 'Email is already taken';
         }
 
-        // Validate Password
-        if (empty($data['password'])) {
-          $data['password_err'] = 'Please enter password';
-        } else if (strlen($data['password']) < 6) {
-          $data['password_err'] = 'Password must be at least 6 characters.';
+        break;
+
+      case DataType::Login:
+        // Ensure data exists
+        $data = checkEmpty($data, 'email');
+        $data = checkEmpty($data, 'password');
+
+        if ($this->userModel->userExists($data['email'])) {
+          // User Found
+        } else {
+          $data['email_err'] = 'No user found';
         }
 
         break;
     }
 
-    // Extra validation on Register after non-empty check
-    if ($dataType == DataType::Register) {
+    // Shared Validation
 
-      // Validate Email
-      if ($this->userModel->userExists($data['email'])) {
-        $data['email_err'] = 'Email is already taken';
-      }
+    // Validate Password length
+    if (strlen($data['password']) < 6) {
+      $data['password_err'] = 'Password must be at least 6 characters.';
     }
 
     return $data;
