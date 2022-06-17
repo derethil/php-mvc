@@ -40,7 +40,7 @@ class Posts extends Controller
       if (empty($data['title_err']) && empty($data['body_err'])) {
         // Validated
         if ($this->postModel->addPost($data)) {
-          flash('post_added', 'Posted Added');
+          flash('post_message', 'Post Added');
           redirect('posts');
         } else {
           die("Something went wrong");
