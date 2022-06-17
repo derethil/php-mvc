@@ -55,4 +55,12 @@ class Post
     // Execute
     return $this->db->execute();
   }
+
+  public function deletePost($id)
+  {
+    $this->db->query('DELETE FROM posts WHERE id = :id');
+    $this->db->bind(':id', $id);
+    // Execute
+    return $this->db->execute();
+  }
 }
